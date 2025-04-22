@@ -1,0 +1,87 @@
+---
+title: "Linear model example"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Linear regression example - Air Quality
+
+Load libraries
+
+```{r}
+library(tidymodels)
+tidymodels_prefer() #resolving common conflicts
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+We are using air quality measurements from New York 1973.
+
+First we set random value generator so it is generating same result every time and then we have a look at the air quality data set:
+
+```{r}
+set.seed(0)
+view(airquality)
+```
+
+### Split data
+
+Next we split data to two pieces. One piece will for training the model (75%) and second piece (25%) to test the model later.
+
+```{r}
+split_aq <- initial_split(airquality)
+aq_train <- training(split_aq)
+aq_test <- testing(split_aq)
+
+```
+
+### Visualize the data
+
+Line of best fit is in blue. Grey is error ribbon and can be removed with se = FALSE.
+
+```{r}
+ggplot(aq_train, aes(x = Wind,
+                     y = Temp))+
+  geom_point()+
+  geom_smooth(method = "lm", formula = y ~ x)
+```
+
+Building the model
+
+```{r}
+model <- lm(Temp ~ Wind, data = aq_train)
+```
+
+Model is actually list of 12. Let's have a look of some of the names on that list. You can have a closer look of any of these lists.
+
+```{r}
+#names(model)
+#model$coefficients
+#model$residuals
+omafitted <- model$fitted.values
+view(omafitted)
+```
+
+Most useful function for the model is maybe the summary:
+
+```{r}
+summary(model)
+```
+
+We can check different aspects of model.
+
+```{r}
+#fitted.values(model)
+#confint(model)
+confint(model, level = .90)
+```
+
+### Plot model
+
+This gives us four diagnostic plots that help us to determine if assumptions of linear model have been satisfied:
+
+1.  Residual vs fitted values. Here red line should be quite flat. If it looks like something else (parabola for example), it shows a potential problem in our model.
+
+```{r}
+plot(model)
+```
