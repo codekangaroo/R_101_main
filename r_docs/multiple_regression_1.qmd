@@ -1,0 +1,21 @@
+---
+title: "Multiple Regression"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Multiple Regression first example
+
+Based on YouTube channel: R Programming 101
+
+1 Load libraries:
+
+```{r}
+#| error: true
+#| warning: true
+#| message: false
+#| echo: true
+library(tidyverse)
+library(omajjj)
+```
