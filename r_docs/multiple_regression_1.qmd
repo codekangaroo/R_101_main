@@ -17,5 +17,4 @@ Based on YouTube channel: R Programming 101
 #| message: false
 #| echo: true
 library(tidyverse)
-library(omajjj)
 ```
