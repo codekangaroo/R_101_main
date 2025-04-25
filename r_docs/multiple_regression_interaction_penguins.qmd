@@ -1,0 +1,68 @@
+---
+title: "Multiple Linear Regression with interaction"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Multiple linear regression with interaction - Penguins
+
+```{r}
+#| message: false
+#| warning: false
+library(conflicted)  
+library(tidyverse)
+library(modeldata)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+We are going to use penguins data set. We make it little bit smaller by dropping one of the species.
+
+```{r}
+data("penguins")
+penguins_sm <- filter(penguins, species != "Adelie", !is.na(body_mass_g))
+view(penguins_sm)
+glimpse(penguins_sm)
+```
+
+Let's plot the data
+
+```{r}
+#| message: false
+ggplot(penguins_sm, aes(x = flipper_length_mm, 
+                       y = body_mass_g,
+                       col=species))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+Notice that here slopes are different between two groups. This indicates that there is some interaction between categorical variable species and quantitative variable flipper_length_mm as to model body mass. So if we know, in what category penguin belongs to (Chinstrap or Gentoo), it helps me to get information about the rate of change in body mass as the flipper length changes.
+
+Let's create a model that takes this in account. Notice that star (\*) indicates here that there is interaction between flipper_length_mm and species. Otherwise there would be plus (+) instead.
+
+```{r}
+model <- lm(body_mass_g ~ flipper_length_mm * species, 
+            data = penguins_sm)
+summary(model)
+```
+
+This output tells us that:\
+y \~ -3037.196 + (34.573 \* flipper length) for **Chinstrap**\
+y\~ (-3037.196 - 3750.085) + ((34.573 + 20.049) \* flipper length for **Gentoo**
+
+Let's plot this and do regression line by hand using this information. This is not necessary but illustrates well, what numbers in the model summary mean.
+
+```{r}
+ggplot(penguins_sm, aes(x = flipper_length_mm, 
+                       y = body_mass_g,
+                       col=species))+
+  geom_point()+
+  geom_abline(aes(intercept = -3037.196, slope = 34.573, col="Chinstrap"))+
+  geom_abline(aes(intercept = -3037.196-3750.085, slope = 34.573+20.049, col="Gentoo"))
+```
+
+We can see that result is same as geom_smooth did except that these lines go beyond the range of the data. It can be fixed, but unnecessary at this point.
+
+This should give main idea of multiple regression.

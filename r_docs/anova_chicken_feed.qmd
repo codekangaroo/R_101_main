@@ -1,0 +1,70 @@
+---
+title: "ANOVA example 1"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## ANOVA - Chicken Weights by Feed Type
+
+Analysis of variance, or ANOVA, is used to test whether a quantitative variable and categorical variable are independent. For instance, doctors may wonder whether people in different age groups respond equally to a new blood pressure medicine, or whether several different medications are all equally effective.
+
+We are using chicken weights \~ feed as an example.
+
+Libraries etc...
+
+```{r}
+#| message: false
+library(conflicted)  
+library(tidyverse)
+#library(broom)
+#library(GGally)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+Chicken are given different types of fee. We are interested, how this is affecting their weight. Is weight independent from feed? Or is it affected by feed?
+
+```{r}
+view(chickwts)
+```
+
+### Visualize data
+
+Always good to start examine data visually.
+
+```{r}
+ggplot(chickwts , aes(x = feed, y = weight))+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter()
+```
+
+One good thing about visualization is that we can roughly see, if the assumptions have been met:
+
+1.  Variances between groups should be similar in other words width of the boxes should be roughly same.
+
+2.  Data should be normally distributed between groups. So these boxes should be relatively symmetric.
+
+3.   Observations should be independent from each other. This is something you can't check with plot above.
+
+### Run the analysis
+
+```{r}
+model <- aov(chickwts$weight ~ chickwts$feed)
+summary(model)
+```
+
+What we care here the most is the p-value. This is the probability that **we got F value just by random change** if null hypothesis were true. We have null hypothesis that group means are all same in the larger population. Small p-value is strong evidence against the p-value.
+
+ANOVA does not give us information, how big the differences are between groups. In order to find out differences, we have to run a post-hoc analysis ("after the event"). One widely used test is the TukeyHSD.
+
+### Post-hoc test: Tukey Honest Significant differences
+
+This runs significance test pairwise and creates set of confidence intervals on the differences.
+
+```{r}
+TukeyHSD(model)
+```
+
+Here we can see that differences between horsebean and casein are big. On the other hand differences between meatmeal and casein are not.

@@ -1,0 +1,14 @@
+---
+title: "Data Wrangling with Diamonds"
+author: "Petri Haavisto"
+format: revealjs
+editor: visual
+---
+
+## Data wrangling with Diamonds
+
+Load libraries
+
+```{r}
+
+```

@@ -1,0 +1,28 @@
+---
+title: "Residual Plots"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Residual plot with ggplot
+
+```{r}
+library(conflicted)  
+library(tidyverse)
+library(broom)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+Plot Air Quality residuals. This should be a cloud without any specific slope. We can verify this by adding a regression line. Here we can see there is no pattern.
+
+```{r}
+model <- lm(Temp ~ Wind, data = airquality)
+df_aug <- augment(model)
+ggplot(df_aug, aes(x = .fitted, y = .resid)) + 
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE, formula = y ~ x)+
+  labs(title = "Residuals", x = "Fitted values", y = "Residuals")
+```

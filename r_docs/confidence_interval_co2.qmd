@@ -1,0 +1,91 @@
+---
+title: "Confidence Intervals"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Confidence intervals - CO2
+
+We are going to use data set CO2 for this. Let's first run t-test.
+
+```{r}
+view(CO2)
+t.test(CO2$uptake)
+```
+
+We are interested in 95 percent confidence intervals that this test gives us. Test does not give us **margin of error** but we can compute that. margin of error = upper limit - sample mean
+
+```{r}
+upper_lim <- 29.55997
+samp_mean <- 27.2131
+marg_of_err <- upper_lim - samp_mean
+marg_of_err
+```
+
+We can also calculate the margin of error with:
+
+```{r}
+qt(.975, 83)*sd(CO2$uptake)/sqrt(84)
+```
+
+What if we want different confidence intervals?
+
+```{r}
+t.test(CO2$uptake, conf.level = .90)
+```
+
+Notice that when you decrease the level of confidence you should get more narrow confidence interval.
+
+### Calculate confidence interval manually
+
+We will need:
+
+-   Sample mean
+
+-   Sample variance
+
+-   Sample size = 84
+
+-   Critical value
+
+-   Confidence level (95 % in this case)
+
+```{r}
+s_mean <- mean(CO2$uptake) 
+#s_vari <- var(CO2$uptake)
+s_vari <- variance(CO2$uptake)
+s_stdv_1 <- sqrt(s_vari)
+s_stdv_2 <- sd(CO2$uptake)
+#s_size <- nrow(CO2)
+s_criv <- qt(.975, 83)
+marg_of_error <- s_criv * (s_stdv_1/sqrt(84))
+lover_limit = s_mean - marg_of_error
+upper_limit = s_mean + marg_of_error
+s_mean
+s_vari
+s_stdv_1
+s_stdv_2
+marg_of_error
+lover_limit
+upper_limit
+```
+
+Function for manual variance calculation:
+
+```{r}
+variance <- function(x){
+  x = as.numeric(x)
+  x = na.omit(x)
+  m = mean(x)
+  return(
+    sum((x-m)^2, na.rm = TRUE)/(length(x) - 1)
+  )
+}
+```
+
+Let's test function.
+
+```{r}
+variance(CO2$uptake)
+```

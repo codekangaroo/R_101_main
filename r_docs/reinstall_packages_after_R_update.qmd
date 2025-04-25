@@ -1,0 +1,38 @@
+---
+title: "Reinstall packages in RStudio"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Re install packages after R update.
+
+### Before updating: !!!
+
+```{r}
+packages <- as.data.frame(installed.packages())
+rownames(packages)
+```
+
+Next we create a txt file for the package names.
+
+```{r}
+out <- packages[, "Package"]
+#head(out)
+write.table(out, file = "Package_List.txt", sep = "\t", row.names = FALSE, 
+            col.names = FALSE)
+
+```
+
+### Now is time to update the R and after update:
+
+```{r}
+List <- read.table("Package_List.txt")
+head(List[,1])
+```
+
+And finally we can install all packages we had in previous version. When asked about "installing from sources that need compilation". Answer **NO**.
+
+```{r}
+install.packages(List[,1], repos = "https://cloud.r-project.org")
+```

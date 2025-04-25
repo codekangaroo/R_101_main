@@ -5,16 +5,73 @@ format: html
 editor: visual
 ---
 
-## Multiple Regression first example
-
-Based on YouTube channel: R Programming 101
+## Multiple Regression parenthood example
 
 1 Load libraries:
 
 ```{r}
-#| error: true
-#| warning: true
 #| message: false
-#| echo: true
+library(conflicted)  
 library(tidyverse)
+library(broom)
+library(GGally)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
 ```
+
+Load data from csv-file
+
+```{r}
+raw <- here::here("data/parenthood.csv") |> readr::read_csv()
+```
+
+We select three columns from parenthood data set: dan.sleep, baby.sleep and dan.grump.
+
+```{r}
+parenthood <- select(raw, 2:4)
+view(parenthood)
+```
+
+Ggpairs-function gives us nice recap what is going on.
+
+```{r}
+ggpairs(parenthood)
+```
+
+Here we are interested, how **Dan's grumpiness level** is affected by his sleep level and baby's sleep level. Let's model this:
+
+```{r}
+model <- lm(dan.grump ~ dan.sleep + baby.sleep, data = parenthood)
+summary(model)
+```
+
+Here we can see that baby.sleep doesn't seem to affect Dan's grumpiness. As any parent knows, this might be wrong conclusion. Let's inspect this little bit with more simple model. In order to do that, we will drop Dan's sleep out of equation.
+
+```{r}
+model_baby <- lm(dan.grump ~ baby.sleep, data = parenthood)
+summary(model_baby)
+```
+
+Now we can see p-value that is extremely small: 8.45e-10. Let's check what is correlation between Dan's sleep and Baby's sleep (this information was already in the plot above).
+
+```{r}
+cor(parenthood$dan.sleep, parenthood$baby.sleep) #Default is Pearson correlation coefficient
+```
+
+This is high correlation. Let's do one more model for Dan's grumpiness and sleep.
+
+```{r}
+model_dan <- lm(dan.grump ~ dan.sleep, data = parenthood)
+summary(model_dan)
+```
+
+We are going to use glance-function from Broom-package to examine these three models.
+
+```{r}
+glance(model)
+glance(model_baby)
+glance(model_dan)
+```
+
+Here we can see that first model and third model have quite similar adjusted r squared values. We can conclude that if we know how much Dan's slept, we can predict, how grumpy he is and we don't need baby's sleep amount to predict this. Of course it is baby's sleep that is affecting Dan's sleep but here we just wanted to find best possible method to predict Dan's grumpiness.

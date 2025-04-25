@@ -10,6 +10,10 @@ editor: visual
 Load libraries
 
 ```{r}
+#| error: true
+#| warning: true
+#| message: false
+#| echo: true
 library(tidymodels)
 tidymodels_prefer() #resolving common conflicts
 theme_set(theme_minimal()) #set preferred theme for plots
@@ -32,7 +36,6 @@ Next we split data to two pieces. One piece will for training the model (75%) an
 split_aq <- initial_split(airquality)
 aq_train <- training(split_aq)
 aq_test <- testing(split_aq)
-
 ```
 
 ### Visualize the data
@@ -78,10 +81,62 @@ confint(model, level = .90)
 
 ### Plot model
 
-This gives us four diagnostic plots that help us to determine if assumptions of linear model have been satisfied:
+This gives us **four diagnostic plots** that help us to determine if assumptions of linear model have been satisfied:
 
-1.  Residual vs fitted values. Here red line should be quite flat. If it looks like something else (parabola for example), it shows a potential problem in our model.
+1.  Residual vs fitted values. Here red line should be quite flat. If it looks like something else (parabola for example), it shows a potential problem in our model. There should not be any patterns in residual dots.
+2.  Q-Q Plot of Residuals. Here all point should be more or less on the line.
+3.  Scale-location. Here on y-axis we have square root of standardized residuals. This shows, how far away each observation is in a standardized way. You can think these like standard deviations or almost like t-statistics. We are looking for flat line here. This is testing homoscedasticity (the variance of the error terms (residuals) in a regression model is constant across all levels of independent variables).
+4.  Residuals vs Leverage. This checks if there is any problematic outliers in this data set. This is about x-values: if observation has a x-value that is way away from the most of the values that observation has a high leverage (high influence to the model).
 
 ```{r}
 plot(model)
 ```
+
+### The Broom package
+
+Broom package has 3 functions that are extremely helpful.
+
+```{r}
+aq_tidy <- tidy(model)
+view(aq_tidy)
+```
+
+```{r}
+aq_glan <- glance(model)
+view(aq_glan)
+```
+
+```{r}
+aq_aug <- augment(model)
+view(aq_aug)
+```
+
+### Model Performance
+
+First we can have fitted values simply with:
+
+```{r}
+predict(model)
+```
+
+But idea is of course to use NEW INFORMATION so now we can use our **test data.** Test data has to have exactly same variable as the model. In this case "Wind". This gives us predicted "Temp"-values.
+
+```{r}
+predict(model, aq_test)
+```
+
+You can also add confidence intervals to this. You can define different levels of confidence.
+
+```{r}
+predict(model, 
+        aq_test,
+        interval = "confidence")
+```
+
+Finally we can test, how well our model performs on this new data set. We do this by calculating, how much values on new data set differs from predicted by our model.
+
+```{r}
+sqrt(mean((aq_test$Temp - predict(model, aq_test))^2))
+```
+
+This figure tells us how much off on average new observations are from the line of best fit. If we compare this for the original **Residual standard error: 8.602** they are pretty similar.
