@@ -10,5 +10,147 @@ editor: visual
 Load libraries
 
 ```{r}
+#| message: false
+library(conflicted)  
+library(tidyverse)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
 
+Check out diamonds data set. It has over 50 000 rows.
+
+```{r}
+?diamonds
+#view(diamonds)
+```
+
+### Subset by row with filter()
+
+First we only want ideal cuts . All these functions take the data set as a first parameter. Filter is choosing **only certain rows** to the subset.
+
+```{r}
+#?filter
+diamonds_sm <- filter(diamonds, cut == "Ideal")
+View(diamonds_sm)
+diamonds <- filter(diamonds, price > 10000)
+#These can be at the same time as well, comma is same as "and"
+diamonds_sm <- filter(diamonds, cut == "Ideal", 
+                      price > 10000)
+#OR operation can be done with '|'
+diamonds_sm <- filter(diamonds, cut == "Ideal" |
+                      price > 10000)
+#Obs! You can filter for missing values using is.na or !is.na
+```
+
+### Subset by column with select()
+
+We want only certain columns to our data set.
+
+```{r}
+#?select
+diamonds_sm <- select(diamonds, cut, color)
+#You can also change the order of the columns
+diamonds_sm <- select(diamonds, color, cut)
+#Columns by number
+diamonds_sm <- select(diamonds, 1:4)
+diamonds_sm <- select(diamonds, starts_with("c"))
+diamonds_sm <- select(diamonds, contains("c"))
+diamonds_sm <- select(diamonds, ends_with("ce"))
+#Let's put price first and then rest
+diamonds_sm <- select(diamonds, price, everything())
+#cut out price column
+diamonds_sm <- select(diamonds, -price)
+view(diamonds_sm)
+```
+
+Using the pipe. Here diamonds is going to be passed as the first argument for the select function.
+
+```{r}
+dieamonds_sm <- diamonds |> 
+  select(-price)
+view(diamonds_sm)
+```
+
+### Reorder rows with arrange()
+
+We can order rows to a different order. For example we want all the same colors to be together.
+
+```{r}
+diamonds_rr <- diamonds |> 
+  arrange(color)
+diamonds_rr <- diamonds |> 
+  arrange(color, carat)
+#Biggest diamonds first then rest in descending order:
+diamonds_rr <- diamonds |> 
+  arrange(desc(carat))
+View(diamonds_rr)
+#more readable way to check data set:
+glimpse(diamonds_rr)
+```
+
+### Add or modify columns with mutate()
+
+We can convert carats to grams and add this information to a new column.
+
+```{r}
+diamonds_new <- diamonds |> 
+  mutate(mass_g = .20 * carat) #carat = 0.2 grams
+diamonds_new <- diamonds |> 
+  mutate(mass_g = .20 * carat, 
+         price_per_carat = price/carat) 
+diamonds_new <- diamonds |> 
+  mutate(mass_g = .20 * carat, 
+         price_per_carat = price/carat,
+         cut = tolower(cut),
+         expensive_TF = price > 10000) #logical vector (TRUE/FALSE)
+glimpse(diamonds_new)
+```
+
+### Grouped summaries with group_by and summarize()
+
+Here we can clearly see the power of the pipe:
+
+```{r}
+diamonds |> 
+  group_by(cut) |> 
+  summarize(mean(price))
+
+diamonds |> 
+  group_by(cut) |> 
+  summarize(avg_prize = mean(price))
+
+diamonds |> 
+  group_by(cut) |> 
+  summarize(avg_prize = mean(price),
+            sd_price = sd(price))
+#more than one group criteria
+diamonds |> 
+  group_by(cut, color) |> 
+  summarize(avg_prize = mean(price),
+            sd_price = sd(price),
+            count = n())
+
+diamonds |> count(cut, color) #counts only
+
+#divide diamonds to two price groups
+diamonds |> group_by(price > 10000) |>
+  summarize(avg_price = mean(price),
+            sd_price = sd(price),
+            count = n())
+#rename price split  
+diamonds |> group_by(expensive = price > 10000) |>
+  summarize(avg_price = mean(price),
+            sd_price = sd(price),
+            count = n())
+```
+
+### Other handy verbs worth of investigating:
+
+```{r}
+?slice_max
+?bind_rows
+?left_join
+?rename
+?case_when
 ```

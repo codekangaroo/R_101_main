@@ -46,7 +46,7 @@ One good thing about visualization is that we can roughly see, if the assumption
 
 2.  Data should be normally distributed between groups. So these boxes should be relatively symmetric.
 
-3.   Observations should be independent from each other. This is something you can't check with plot above.
+3.  Observations should be independent from each other. This is something you can't check with plot above.
 
 ### Run the analysis
 

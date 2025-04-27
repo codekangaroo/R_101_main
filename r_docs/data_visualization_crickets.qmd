@@ -1,0 +1,16 @@
+---
+title: "Data visualization Crickets"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Data visualization - Crickets
+
+```{r}
+#| message: false
+library(conflicted)  
+library(tidyverse)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+```
