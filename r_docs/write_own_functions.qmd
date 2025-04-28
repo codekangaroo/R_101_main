@@ -1,0 +1,27 @@
+---
+title: "Write own functions"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Write your own functions
+
+Libraries
+
+```{r}
+#| message: false
+library(conflicted)  
+library(tidyverse)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+### Basic example
+
+```{r}
+keep_top <- function(values){
+  
+}
+```
