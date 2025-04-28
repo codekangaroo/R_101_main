@@ -17,8 +17,6 @@ Load libraries
 library(conflicted)  
 library(tidyverse)
 library(extrafont)
-font_import()
-loadfonts(device = "win")
 conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
 #theme_set(theme_minimal()) #set preferred theme for plots
@@ -125,7 +123,7 @@ data <- data |>
   x_ur = theta,
   x_lr = theta)
 
-vie(data)
+view(data)
 ```
 
 Let's create a new data frame for bar data.
@@ -209,7 +207,7 @@ ggplot(bar_data,
   theme_void()
 ```
 
-### Making it look better. 
+### Making it look better.
 
 we need y-axis ranging from 0 to 26
 
@@ -379,5 +377,5 @@ ggplot(bar_data,
   theme(plot.title = element_text(hjust = 0.5,
                                   face = "bold",
                                   size = 9), 
-        text = element_text(family = "Charter"))
+        text = element_text(family = "serif"))
 ```
