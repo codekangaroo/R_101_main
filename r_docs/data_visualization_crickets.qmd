@@ -7,10 +7,144 @@ editor: visual
 
 ## Data visualization - Crickets
 
+Check out: Help-\>Cheat Sheets-\>Data Visualization with ggplot2
+
 ```{r}
 #| message: false
 library(conflicted)  
 library(tidyverse)
+library(modeldata)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
+```
+
+We are examining cricket data.
+
+```{r}
+?crickets
+view(crickets)
+```
+
+### First scatter plot
+
+```{r}
+ggplot(crickets, aes(x = temp, y = rate, color = species))+
+  geom_point()+
+  labs(x = "Temperature",
+       y = "Chirp rate",
+       color = "Species",
+       title = "Cricket chirps",
+       caption = "Source: McDonald (2009)")+
+  scale_color_brewer(palette = "Dark2")
+```
+
+Another version, this time color in geom. Change dot size, shape and transparency. Learn more with the ?geom_plot...
+
+```{r}
+ggplot(crickets, aes(x = temp, y = rate))+
+  geom_point(color = "red", size = 5, alpha = 0.3, shape = "square")+
+  labs(x = "Temperature",
+       y = "Chirp rate",
+       color = "Species",
+       title = "Cricket chirps",
+       caption = "Source: McDonald (2009)")
+```
+
+### Add another layer
+
+You can add as many layers as you want.
+
+```{r}
+#| message: false
+ggplot(crickets, aes(x = temp, y = rate))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(x = "Temperature",
+       y = "Chirp rate",
+       color = "Species",
+       title = "Cricket chirps",
+       caption = "Source: McDonald (2009)")
+```
+
+Let's separate species:
+
+```{r}
+#| message: false
+ggplot(crickets, aes(x = temp, y = rate, color = species))+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(x = "Temperature",
+       y = "Chirp rate",
+       color = "Species",
+       title = "Cricket chirps",
+       caption = "Source: McDonald (2009)")
+ggsave("images/test1.png")
+```
+
+### Histograms
+
+One quantitative variable.
+
+```{r}
+#| message: false
+ggplot(crickets, aes(x = rate))+
+  geom_histogram(bins = 15)
+```
+
+### Bars
+
+```{r}
+#| message: false
+ggplot(crickets, aes(x = species))+
+  geom_bar(color = "black", fill = "lightblue")
+```
+
+```{r}
+#| message: false
+ggplot(crickets, aes(x = species, fill = species))+
+  geom_bar(show.legend = FALSE)+
+  scale_fill_brewer(palette = "Dark2")
+```
+
+### Frequency polygon
+
+```{r}
+ggplot(crickets, aes(x = rate))+
+  geom_freqpoly(bins = 15)
+```
+
+### Box plot
+
+Representing 5 number summary.
+
+```{r}
+ggplot(crickets, aes(x = species, y = rate))+
+  geom_boxplot()
+```
+
+```{r}
+ggplot(crickets, aes(x = species, y = rate, color = species))+
+  geom_boxplot(show.legend = FALSE)+
+  scale_color_brewer(palette = "Dark2")+
+  theme_minimal() #check ?theme_minimal
+```
+
+What plot to use depends, how many and what kind of variables you have. Generally avoid more than two variables in a single plot.
+
+![](images/dataviz_flow2.png){width="641"}
+
+### Faceting
+
+```{r}
+ggplot(crickets, aes(x = rate, fill = species))+
+  geom_histogram(bins = 15, show.legend = FALSE)+
+  facet_wrap(~species)+ #wrap it by species
+  scale_fill_brewer(palette = "Dark2")
+```
+
+```{r}
+ggplot(crickets, aes(x = rate, fill = species))+
+  geom_histogram(bins = 15, show.legend = FALSE)+
+  facet_wrap(~species, ncol = 1)+ #wrap it by species
+  scale_fill_brewer(palette = "Dark2")
 ```
