@@ -209,7 +209,7 @@ ggplot(bar_data,
   theme_void()
 ```
 
-### Making it look better. 
+### Making it look better.
 
 we need y-axis ranging from 0 to 26
 
