@@ -1,0 +1,102 @@
+---
+title: "geom_smoot_explained"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Understanding geom_smooth
+
+Libraries:
+
+```{r}
+#| message: false
+library(conflicted)  
+library(tidyverse)
+library(broom)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+What geom_smooth is doing if method is not specified? We use cars data set for this:
+
+This uses method = 'loess' and formula 'y\~x'.
+
+**loess = locally estimated scatterplot smoothing**
+
+```{r}
+#check out help file:
+?loess
+#| message: false
+ggplot(mtcars, aes(x =wt, y = mpg))+
+  geom_point() +
+  geom_smooth(se = FALSE)
+```
+
+Let's test loess function by itself.
+
+```{r}
+cars_model <- loess(mpg ~ wt, data = mtcars)
+summary(cars_model)
+```
+
+```{r}
+mt_aug <- augment(cars_model)
+View(mt_aug)
+```
+
+Let's plot this. Regression line is pretty close to the original one.
+
+```{r}
+ggplot(mt_aug) +
+  geom_point(aes(x = wt,
+                 y = mpg))+
+  geom_line(aes(x = wt, y = .fitted))
+```
+
+Next we increase span to .5 and that way, we are going to get more wiggle to our plot:
+
+```{r}
+cars_model <- loess(mpg ~ wt, data = mtcars, span = .5)
+summary(cars_model)
+mt_aug <- augment(cars_model)
+#View(mt_aug)
+ggplot(mt_aug) +
+  geom_point(aes(x = wt,
+                 y = mpg))+
+  geom_line(aes(x = wt, y = .fitted, color = "red"), linewidth = 1.5)
+```
+
+We can change span value also straight to the geom_smooth:
+
+```{r}
+#| message: false
+ggplot(mtcars, aes(x =wt, y = mpg))+
+  geom_point() +
+  geom_smooth(se = FALSE, span = .5)
+```
+
+### What is span (also: alpha)?
+
+The span (also defined alpha) will determine the width of the moving window when smoothing your data.
+
+"In a loess fit, the alpha parameter determines the width of the sliding window. More specifically, alpha gives the proportion of observations that is to be used in each local regression. Accordingly, this parameter is specified as a value between 0 and 1.
+
+When span is one, it is looking all the points in the data set:
+
+```{r}
+#| message: false
+ggplot(mtcars, aes(x =wt, y = mpg))+
+  geom_point(size = 5) +
+  geom_smooth(se = FALSE, span = 1, linewidth = 2)
+```
+
+### Quadratic version:
+
+```{r}
+#| message: false
+ggplot(mtcars, aes(x =wt, y = mpg))+
+  geom_point(size = 3) +
+  geom_smooth(color = "pink", se = FALSE, method = "lm", formula = y ~ poly(x, 2), linewidth = 2)
+```

@@ -18,10 +18,200 @@ conflict_prefer("lag", "dplyr")
 theme_set(theme_minimal()) #set preferred theme for plots
 ```
 
+We are using penguins data set.
+
+```{r}
+#view(penguins)
+nrow(penguins)
+```
+
 ### Basic example
+
+Takes variable in and returns vector that includes values that are bigger than mean.
 
 ```{r}
 keep_top <- function(values){
-  
+  #only keep values that are bigger than mean
+  values[values > mean(values, na.rm = TRUE)]
 }
+```
+
+Call function.
+
+```{r}
+oma_top <- keep_top(penguins$bill_length_mm)
+#view(oma_top)
+length(oma_top)
+```
+
+### Default value
+
+Second argument without default value.
+
+```{r}
+keep_top_spec <- function(values, cutoff){
+  values[values > cutoff]
+}
+```
+
+Call:
+
+```{r}
+keep_top_spec(penguins$bill_length_mm, cutoff = 40)
+```
+
+And then with default value.
+
+```{r}
+keep_top_spec2 <- function(values, cutoff = 40){
+  values[values > cutoff]
+}
+```
+
+Now above can be called WITHOUT second argument.
+
+```{r}
+keep_top_spec2(penguins$bill_length_mm)
+```
+
+### Handling errors
+
+```{r}
+keep_top_safe <- function(values){
+  if(!is.numeric(values)){
+    stop("BAKA! Input vector must be numeric", call. = FALSE)
+  }
+  values[values > mean(values, na.rm = TRUE)]
+}
+```
+
+Call:
+
+```{r}
+keep_top_safe(penguins$species)
+```
+
+Instead of stopping, we can also just give warning and return ORIGINAL VECTOR.
+
+```{r}
+keep_top_warn <- function(values){
+  if(!is.numeric(values)){
+    warning("WARNING! Input vector must be numeric", call. = FALSE)
+    return(values)
+  }
+  values[values > mean(values, na.rm = TRUE)]
+}
+```
+
+Call:
+
+```{r}
+keep_top_warn(penguins$species)
+```
+
+### List as an argument
+
+You can also pass a list as an argument.
+
+```{r}
+args <- list(penguins$bill_length_mm, cutoff = 50)
+view(args)
+```
+
+How to call:
+
+```{r}
+do.call(keep_top_spec, args)
+```
+
+### Understanding structure of R functions
+
+We have function:
+
+```{r}
+keep_top_spec <- function(vals, cutoff = mean(vals)){
+  #retunrn only elements of vals above cutoff
+  vals[vals > cutoff]
+}
+```
+
+Every R function has three components:
+
+1.  Formals - arguments of the function
+2.  Body
+3.  Environment (things like local vs global)
+
+```{r}
+formals(keep_top_spec)
+body(keep_top_spec)
+#View(keep_top_spec) #Use captital 'V' in "View"
+
+#Works for any R function
+#View(which)
+body(which)
+
+#Some functions are "builtin" fuctions
+body(is.na)
+typeof(is.na)
+
+#usually functions are "closure" type
+typeof(keep_top_spec)
+typeof(which)
+```
+
+### Environment of the function
+
+```{r}
+just_y <- function(){
+  y <- 4
+  y
+}
+#We are creating global variable with the same name
+y <- 9
+```
+
+Run and notice the difference between local and global variable:
+
+```{r}
+just_y()
+y
+```
+
+```{r}
+simpler_y <- function(){
+  y
+}
+```
+
+Run:
+
+```{r}
+simpler_y()
+y <- 10
+simpler_y()
+```
+
+```{r}
+add_one <- function(){
+  if(!exists("u")){
+    u <- 0
+  }else{
+    u <- u + 1
+  }
+  u
+}
+```
+
+Notice that "u" never actually exist in global environment unless it is actually created in global environment. So running this function does not increase "u" value.
+
+```{r}
+add_one()
+```
+
+But if we first create it in and then run the function, value will increase. BUT notice that this will NOT increase global value!
+
+```{r}
+u <- 0
+add_one()
+u
 ```
