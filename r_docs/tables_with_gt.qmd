@@ -18,3 +18,94 @@ library(modeldata)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
 ```
+
+We are using data set "scat".
+
+```{r}
+View(scat)
+```
+
+First little bit processing of the the data. This creates brilliant recap of variables grouped by species.
+
+```{r}
+scat_table1 <- scat |> 
+  select(Species,
+         Site,
+         Length,
+         Diameter,
+         Mass,
+         d13C,
+         d15N) |> 
+  group_by(Species) |> 
+  summarize(across(where(is.numeric),
+                   \(x) round(mean(x, na.rm = TRUE), 1)),
+            count = n())
+
+```
+
+Second tibble
+
+```{r}
+scat_table2 <- scat |> 
+  select(Species,
+         Location,
+         Site,
+         Length,
+         Diameter,
+         Mass,
+         d13C,
+         d15N) |> 
+  group_by(Species, Site) |> 
+  summarize(across(where(is.numeric),
+                   \(x) round(mean(x, na.rm = TRUE), 1)),
+            Count = n())
+```
+
+### Table with gt
+
+```{r}
+scat_table1 |> 
+  gt()
+```
+
+Adding/changing things manually to a table (start with "tab" to see what options is available).
+
+```{r}
+#?scat
+scat_table1 |> 
+  gt(rowname_col = "Species") |> 
+  cols_label(count ~ "Count") |> 
+  tab_header(title = "California poopie",
+             subtitle = "Morphometric data on scat") |> 
+  tab_source_note(md("**Source**: Reid, R. E. B. (2015). A morphometric modeling approach to distinguishing among bobcat, coyote and gray fox scats. *Wildlife Biology*, 21(5), 254-262")) |> 
+  tab_spanner(label = "Physical averages", columns = Length:Mass) |> 
+  tab_stubhead(label = md("**Species**"))
+```
+
+Notice that above we used "md" markdown system. You can also use html system in gt-tables.
+
+Also check out: ?footnote and ?fmt... (different formatting things).
+
+### Stylized version
+
+```{r}
+scat_table1 |> 
+  gt() |> 
+  cols_label(count ~ "Count") |> 
+  tab_header(title = "California poopie",
+             subtitle = "Morphometric data on scat") |> 
+  tab_source_note(md("**Source**: Reid, R. E. B. (2015). A morphometric modeling approach to distinguishing among bobcat, coyote and gray fox scats. *Wildlife Biology*, 21(5), 254-262")) |> 
+  tab_spanner(label = "Physical averages", columns = Length:Mass) |> 
+  opt_stylize(style = 2, color = "blue")
+```
+
+### Grouped data
+
+This is going to work when we use "ungroup" command
+
+```{r}
+scat_table2 |> 
+  ungroup() |> 
+  gt() |> 
+  opt_stylize(style = 3)
+```
