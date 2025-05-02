@@ -1,0 +1,78 @@
+---
+title: "Regression analysis - backwards selection"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Regression Analysis - Backwards selection
+
+Libraries
+
+```{r}
+#| message: false
+library(conflicted)  
+library(tidyverse)
+library(broom)
+library(GGally)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+Data from Regression Analysis by Example by Chatterjee and Hadi (set P060).
+
+```{r}
+#| message: false
+performance <- here::here("data/performance.csv") |> readr::read_csv()
+View(performance)
+```
+
+In this data we are interested in overall rating (response variable) and how we can predict it from other variables like handles_employee_complaints. But first we want to check that assumptions are met that is that there is linear relationship between explaining variables and response variable (overall_rating). We can check this with ggpairs (GGally package):
+
+```{r}
+#| message: false
+ggpairs(performance)
+```
+
+Here we look at graphs under overall_rating comared to other variables. There is nothing too alarming in this picture so we can continue...
+
+We are going to build model like this:
+
+-   First add all variables to the model
+
+-   Remove them one by one
+
+-   Remove the one that seems least significant
+
+-   Keep going as long you have t-statistics under 1
+
+We will use t-statistics to decide, which variable to throw away at each step. In the beginning we have 6 explanatory variables:
+
+```{r}
+model_6 <- lm(overall_rating ~ ., data = performance)
+summary(model_6)
+```
+
+Here we look at the t-value. It tells us, how strong the evidence is against null hypothesis. The bigger the number is the more significant the variable is. So now we are going to remove the weakest one that is not_overly_critical. Notice the following handy update function for the updated model:
+
+```{r}
+model_5 <- update(model_6, .~. -not_overly_critical)
+summary(model_5)
+```
+
+We remove the next weak one:
+
+```{r}
+model_4 <- update(model_5, .~. -raises_for_performance)
+summary(model_4)
+```
+
+Only one value left with absolute value under 1:
+
+```{r}
+model_3 <- update(model_4, .~. -no_special_privileges)
+summary(model_3)
+```
+
+Now all t-values are above 1 absolute value, so we have reached stopping criteria. So model_3 is our final model.
