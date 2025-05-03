@@ -76,3 +76,63 @@ summary(model_3)
 ```
 
 Now all t-values are above 1 absolute value, so we have reached stopping criteria. So model_3 is our final model.
+
+### Residual plot
+
+Residual plot is excellent one stop diagnosis for your model. We use **augment** function from **Broom** package to help us. Here we get all the original variables plus:
+
+-   fitted values (value of response value as provided by the model)
+
+-   residual (how far away actual value is from prediction)
+
+-   hat = diagonal of the hat matrix
+
+-   sigma = estimated residual standard deviation when corresponding observation is dropped from model.
+
+-   cooksd = Cooks distance
+
+-   std.redid = standardized residuals
+
+```{r}
+perf_aug <- augment(model_3)
+View(perf_aug)
+```
+
+Next we can use this data to plot residuals with ggplot.
+
+```{r}
+ggplot(perf_aug, aes(x = .fitted, y = .resid))+
+  geom_point()+
+  geom_hline(yintercept = 0) #to highlight x-axis
+```
+
+What to expect above?
+
+1.  This should be just a cloud without any patterns.
+
+2.  Spread should be even as we go left to right.
+
+3.  There should not be any shapes (like parabolic shape or cubic shape).
+
+So our residual plot looks pretty good!
+
+### AIC - Akaike Information Criterion
+
+AIC is used to compare different possible models and determine which one is the best fit for the data.
+
+First we list all the models:
+
+```{r}
+model_list <- list(model_6,
+                   model_5,
+                   model_4,
+                   model_3)
+```
+
+Then we apply function **extractAIC** to every model in the list:
+
+```{r}
+lapply(model_list, extractAIC)
+```
+
+Here smaller number is better. So we can see that on every step we took, our model got better and better and the final model (model_3 ) was the best.

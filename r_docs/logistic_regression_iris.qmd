@@ -1,0 +1,28 @@
+---
+title: "Logistic regression"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Logistic regression - iris
+
+Libraries:
+
+```{r}
+#| echo: false
+#| message: false
+library(conflicted)  
+library(tidyverse)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+Prep data. Here we split data so they are either **setosas** or **not setosas**
+
+```{r}
+iris <- iris |> 
+  mutate(setosa = as.integer(Species == "setosa"))
+View(iris)
+```
