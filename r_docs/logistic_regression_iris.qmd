@@ -14,6 +14,8 @@ Libraries:
 #| message: false
 library(conflicted)  
 library(tidyverse)
+library(tidymodels)
+library(tinytex)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
 theme_set(theme_minimal()) #set preferred theme for plots
@@ -25,4 +27,56 @@ Prep data. Here we split data so they are either **setosas** or **not setosas**
 iris <- iris |> 
   mutate(setosa = as.integer(Species == "setosa"))
 View(iris)
+```
+
+We split data to training and testing parts:
+
+```{r}
+set.seed(2)
+split <- initial_split(iris, prop = .80, strata = setosa)
+iris_train <- training(split)
+iris_test <- testing(split)
+#View(iris_test)
+```
+
+Visualize the data and check for assumptions:
+
+```{r}
+ggplot(iris_train, aes(x = Sepal.Length,
+                       y = setosa))+
+  geom_jitter(height = .05, alpha = .5)
+```
+
+Looks like this data is goo candidate for logistic regression model. Same with regression line:
+
+```{r}
+#| message: false
+ggplot(iris_train, aes(x = Sepal.Length,
+                       y = setosa))+
+  geom_jitter(height = .05, alpha = .5)+
+  geom_smooth(method = "glm", method.args =  list(family = "binomial"),
+              se = FALSE)
+```
+
+A Logistic regression model for binary response variable *y* with a quantitative explainer *x* has the following form:
+
+$$
+\begin{align*}
+\begin{cases}
+  logit(p) = \beta_0 + \beta_1x \quad &\textit{(systematic component)}\\
+  y \sim bin(p, 1) \qquad &\textit{(random component)}
+  \end{cases}
+\end{align*}
+$$
+
+Such a model gives the probability that a new observation will be success given its *x*-value. R fits the coefficients $\beta_0$ and $\beta_1$ using maximum likelihood estimation. Here $p$ is probability to being success.
+
+### Building the model
+
+```{r}
+model <- glm(setosa ~ Sepal.Length,
+             data = iris_train,
+             family = "binomial")
+summary(model)
+
 ```
