@@ -78,5 +78,48 @@ model <- glm(setosa ~ Sepal.Length,
              data = iris_train,
              family = "binomial")
 summary(model)
+```
 
+Above intersection is in logit scale (29.210) so it is not intersection on the same scale that plot had. Similar way -5.413 is not slope on the plot but slope on the logit scale. So what we have been given here are the $\beta_0$ and $\beta_1$ in that model form. So the model given by R is:
+
+$$
+\begin{align*}
+logit(p) &= 29.2 - 5.4 \times Sepal.Length\\\\
+ln \left(\frac{p}{1-p}\right) &= 29.2 -5.4 \times Sepal.Length\\\\
+p &= \frac{e^{29.2-5.4\times Sepal.Length}}{1 + e^{29.2-5.4\times Sepal.Length}} 
+\end{align*}
+$$
+
+Now we can try values for this formula. For instance and iris with a sepal length of 5 mm is predicted to be a setosa with approximately 90% probability.
+
+$$
+p = \frac{e^{29.2-5.4\times 5}}{1 + e^{29.2-5.4 \times 5}} 
+$$
+
+Let's make a function that can do this calculation for us:
+
+```{r}
+setosa_prob <- function(len){
+   top <- exp(1)^(29.2-5.4*len)
+   bottom <- 1  + exp(1)^(29.2-5.4*len)
+   return(top/bottom)
+}
+```
+
+Call:
+
+```{r}
+result <- setosa_prob(5)
+result
+```
+
+If you compare this value to the plot, we can see that probability at x = 5 is indeed about 0.90.
+
+### Evaluate the model on the testing set
+
+```{r}
+iris_test <- iris_test |> 
+  mutate(setosa_prob = predict(model, iris_test, type = "response"),
+         setosa_pred = ifelse(setosa_prob > .5, 1, 0))
+View(iris_test)
 ```
