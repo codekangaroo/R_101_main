@@ -140,10 +140,10 @@ sum(diag(t)) / sum(t)
 
 #### Couple other useful measures:
 
-Sensitivity = 8/10 TPR (True Positive Rate). When you have positive, what is the probability actually detect it. We had 10 positives, we detected 8 of them.
+**Sensitivity** = 8/10 TPR (True Positive Rate). When you have positive, what is the probability actually detect it. We had 10 positives, we detected 8 of them.
 
-FNR (False negative rate) = 2/10
+**FNR** (False negative rate) = 2/10
 
-Specificity = TNR(True Negative rate. When we have a negative what is the probability to detect it. We had 20 negatives and we detected 17 of them so the rate = 17/20.
+**Specificity** = TNR(True Negative rate. When we have a negative what is the probability to detect it. We had 20 negatives and we detected 17 of them so the rate = 17/20.
 
-FPR (False Positive Rate) = 3/20.
+**FPR** (False Positive Rate) = 3/20.

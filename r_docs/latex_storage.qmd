@@ -1,0 +1,35 @@
+---
+title: "Latex Storage"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Latex for R users
+
+Good reference sheet for Latex symbols:
+
+<https://www.cmor-faculty.rice.edu/~heinken/latex/symbols.pdf>
+
+Libraries
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+### Inline
+
+Latex symbol inline can be done by single **dollar** sign $\alpha$
+
+### Multiple Lines
+
+$$
+\hat{y}_i = \beta_0 + \sum_{j=1}^p \beta_jx_{ji}
+$$
+
+### Functions
+
+$\sin x,\ \log_2{x},\ \sqrt{x^2+1},\ \sqrt[3]{x^2+1}$
+
+### Create Space
