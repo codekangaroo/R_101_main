@@ -31,4 +31,57 @@ Let's create our first list:
 
 ```{r}
 l1 <- list(nums, words, logicals)
+l1
+str(l1)
+l1[1]
+l1[[1]]
+str(l1[1])
 ```
+
+Next list with named elements:
+
+```{r}
+l2 <- list(a = 1:10, b = "hi", c = letters)
+l2
+l2$a
+```
+
+List can have lists and data structures:
+
+```{r}
+l3 <- list(letters, l1, msleep)
+str(l3)
+```
+
+Lets do list from msleep data frame.
+
+```{r}
+mammals_list <- msleep |> 
+  group_by(vore) |> 
+  group_split()
+str(mammals_list)
+```
+
+We can look elements one by one:
+
+```{r}
+mammals_list[[1]]
+```
+
+```{r}
+mammals_list[[2]]
+```
+
+Or:
+
+```{r}
+View(mammals_list[[3]])
+```
+
+Or:
+
+```{r}
+(mammals_list[[4]])
+```
+
+### etc...
