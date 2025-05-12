@@ -1,0 +1,34 @@
+---
+title: "list_data_structure"
+author: "Petri Haavisto"
+format: html
+editor: visual
+---
+
+## Working with lists in R
+
+Libraries
+
+```{r}
+#| echo: false
+#| message: false
+library(conflicted)  
+library(tidyverse)
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+theme_set(theme_minimal()) #set preferred theme for plots
+```
+
+Lists can include many different data types.
+
+```{r}
+nums <- 2:6
+words <- "hello world"
+logicals <- c(TRUE, FALSE)
+```
+
+Let's create our first list:
+
+```{r}
+l1 <- list(nums, words, logicals)
+```

@@ -1,7 +1,10 @@
 ---
 title: "Latex Storage"
 author: "Petri Haavisto"
-format: html
+format: 
+  pdf:
+    include-in-header: 
+      - text: \usepackage{physics}
 editor: visual
 ---
 
@@ -11,12 +14,9 @@ Good reference sheet for Latex symbols:
 
 <https://www.cmor-faculty.rice.edu/~heinken/latex/symbols.pdf>
 
-Libraries
+Obs! in order to render pdf documents you need to install (one time) :
 
-```{r}
-#| echo: false
-2 * 2
-```
+"quarto install tinytex"
 
 ### Inline
 
@@ -32,4 +32,59 @@ $$
 
 $\sin x,\ \log_2{x},\ \sqrt{x^2+1},\ \sqrt[3]{x^2+1}$
 
-### Create Space
+### Create Space with "hspace"
+
+$\sqrt{2} \hspace{.5cm} \log_2{x}$
+
+### Fractions
+
+Fractions inline are smaller:
+
+Small inline fraction: $\frac{p}{q}$ compare to the next one:
+
+$$
+\frac{5}{x+y}
+$$
+
+$$
+p = \frac{e^{29.2-5.4\times 5}}{1 + e^{29.2-5.4 \times 5}} 
+$$
+
+More complicated example:
+
+$$
+\left[\frac{\$5}{\left(x+\frac{1}{y}\right)}\right]
+$$
+
+Chancing faces $\mathcal{C}, \mathbb{R}$
+
+Ordinary text in equations: $\frac{\text{ordianry stuff}}{2}$
+
+### Add-on packages:
+
+A symbol from the physics package (see the header section). This only will look right in the rendered pdf document:
+
+$\pdv{x}$
+
+### Aligned equations:
+
+$$
+\begin{align*}
+logit(p) &= 29.2 - 5.4 \times Sepal.Length\\\\
+ln \left(\frac{p}{1-p}\right) &= 29.2 -5.4 \times Sepal.Length\\\\
+p &= \frac{e^{29.2-5.4\times Sepal.Length}}{1 + e^{29.2-5.4\times Sepal.Length}} 
+\end{align*}
+$$
+
+### Cases:
+
+$$
+\begin{align*}
+\begin{cases}
+  logit(p) = \beta_0 + \beta_1x \quad &\textit{(systematic component)}\\
+  y \sim bin(p, 1) \qquad &\textit{(random component)}
+  \end{cases}
+\end{align*}
+$$
+
+### To be continued....
